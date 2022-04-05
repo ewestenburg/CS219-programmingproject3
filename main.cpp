@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
 
     std::fstream file;
     std::string line;
-    std::string operate, o1, o2;
+    std::string operate, o1, o2, o3;
     uint32_t operand1 = 0x0;
     uint32_t operand2 = 0x0;
 
@@ -25,14 +25,37 @@ int main(int argc, char *argv[]){
     //The operands are cast into the uint32_t datatype 
     //Then the operator and operands are passed into the runCommand function
     while(getline(file, line)){
+        o3 = "";
         std::istringstream ss(line);
         ss >> operate >> std::skipws 
            >> o1 >> std::skipws 
-           >> o2;
+           >> o2 >> std::skipws
+           >> o3;
 
-        operand1 = static_cast<uint32_t>(std::stoul(o1, nullptr, 16));
-        operand2 = static_cast<uint32_t>(std::stoul(o2, nullptr, 16));
-        reader.runCommand(operate, operand1, operand2);
+        //Convert Operater and Register names to ALL CAPS
+        for(char& c: operate){
+            if(c >= 96){
+                c = c - 32;
+            } 
+        }
+        for(char& c: o1){
+            if(c >= 96){
+                c = c - 32;
+            }             
+        }
+        for(char& c: o2){
+            if(c >= 96 && c != 'x'){
+                c = c - 32;
+            }             
+        }
+        for(char& c: o3){
+            if(c >= 96){
+                c = c - 32;
+            }             
+        }
+        std::cout << operate << " " << o1 << " " << o2 << " " << o3  << "\n";
+        reader.runCommand(operate, o1, o2, o3);
+        std::cout << "----------------" << '\n';
     }
     return 0;
 }

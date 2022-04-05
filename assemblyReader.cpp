@@ -7,6 +7,7 @@
 //AssemblyReader Constructor
 AssemblyReader::AssemblyReader(){
     initializeMap();
+    initializeRegisters();
 }
 
 //Initializes the commands into the map
@@ -20,94 +21,135 @@ void AssemblyReader::initializeMap(){
     commandMap.insert({"ORR", 6});
     commandMap.insert({"SUB", 7});
     commandMap.insert({"XOR", 8});
+    commandMap.insert({"MOV", 9});
+}
+
+//Inializes the registers to 0x0
+void AssemblyReader::initializeRegisters(){
+    registers.insert({"R0", 0x0});
+    registers.insert({"R1", 0x0});
+    registers.insert({"R2", 0x0});    
+    registers.insert({"R3", 0x0});
+    registers.insert({"R4", 0x0});
+    registers.insert({"R5", 0x0});
+    registers.insert({"R6", 0x0});
+    registers.insert({"R7", 0x0});
 }
 
 //Uses the map to figure out which command is trying to be run and executes that command.
-void AssemblyReader::runCommand(std::string oper, uint32_t op1, uint32_t op2){
+//template<class T>
+void AssemblyReader::runCommand(std::string oper, std::string r0, std::string r1, std::string r2){
     int operKey = commandMap[oper];
 
     switch (operKey){
         case 0:
-            add(op1, op2);
+            registers[r0] = add(r1, r2);
+            std::cout << r0 << " = " << registers[r0] << '\n';
             break;
         case 1:
-            bitwiseAnd(op1, op2);
+            registers[r0] = bitwiseAnd(r1, r2);
+            std::cout << r0 << " = " << registers[r0] << '\n';
             break;
         case 2:
-            asr(op1, op2);
+            registers[r0] = asr(r1, r2);
+            std::cout << r0 << " = " << registers[r0] << '\n';
             break;
         case 3:
-            lsr(op1, op2);
+            registers[r0] = lsr(r1, r2);
+            std::cout << r0 << " = " << registers[r0] << '\n';
             break;
         case 4:
-            lsl(op1, op2);
+            registers[r0] = lsl(r1, r2);
+            std::cout << r0 << " = " << registers[r0] << '\n';
             break;
         case 5:
-            bitwiseNot(op1, op2);
+            registers[r0] = bitwiseNot(r1, r2);
+            std::cout << r0 << " = " << registers[r0] << '\n';
             break;
         case 6:
-            orr(op1, op2);
+            registers[r0] = orr(r1, r2);
+            std::cout << r0 << " = " << registers[r0] << '\n';
             break;
         case 7:
-            sub(op1, op2);
+            registers[r0] = sub(r1, r2);
+            std::cout << r0 << " = " << registers[r0] << '\n';
             break;
         case 8:
-            bitwiseXor(op1, op2);
+            registers[r0] = bitwiseXor(r1, r2);
+            std::cout << r0 << " = " << registers[r0] << '\n';
+            break;
+        case 9:
+            mov(r0, std::stoul(r1, nullptr, 16));
+            std::cout << r0 << " = " << registers[r0] << '\n';
             break;
     }
 }
 
 //Adds two operands and prints result
-void AssemblyReader::add(uint32_t op1, uint32_t op2){
-    std::cout << std::hex << op1 << " + " << std::hex << op2 << " = " << op1 + op2 << "\n";
+uint32_t AssemblyReader::add(std::string r1, std::string r2){
+    std::cout << std::hex << registers[r1] << " + " << std::hex << registers[r2] << " = " << registers[r1] + registers[r2] << "\n";
+    return registers[r1] + registers[r2];
 }
 
 //Bitwise And on two operands
-void AssemblyReader::bitwiseAnd(uint32_t op1, uint32_t op2){
-    std::cout << std::hex << op1 << " & " << std::hex << op2 << " = " << (op1 & op2) << "\n";
+uint32_t AssemblyReader::bitwiseAnd(std::string r1, std::string r2){
+    std::cout << std::hex << registers[r1] << " & " << std::hex << registers[r2] << " = " << (registers[r1] & registers[r2]) << "\n";
+    return (registers[r1] & registers[r2]);
 }
 
 //Logical shift right on first operand
-void AssemblyReader::lsr(uint32_t op1, uint32_t op2){
-    std::cout << "LSR " << std::hex << op1 << " = " << (op1 >> 1) << "\n";
+uint32_t AssemblyReader::lsr(std::string r1, std::string r2){
+    std::cout << "LSR " << std::hex << registers[r1] << " = " << (registers[r1] >> 1) << "\n";
+    return (registers[r1] >> 1);
 }
 
 //Because the integers are unsigned the >> is automatically a LSR. 
 //Arithmetic shift right on first operand. 
-void AssemblyReader::asr(uint32_t op1, uint32_t op2){
-    //x equals the first bit set to 1. I.e x=3 if op1=0101
-    int x = (int)log2(op1)+1;
+uint32_t AssemblyReader::asr(std::string r1, std::string r2){
+    //x equals the first bit set to 1. I.e x=3 if registers[r1]=0101
+    int x = (int)log2(registers[r1])+1;
     //Produces a number that is 1 at the xth bit and 0 every else
     uint32_t mask = pow(2, x-1);
 
-    //op2 is set to the 1 Bit LSR of op1
-    op2 = (op1 >> 1);
+    //registers[r2] is set to the 1 Bit LSR of registers[r1]
+    registers[r2] = (registers[r1] >> 1);
 
-    //The ASR is calculated by taking the OR of the 1 Bit LSR of op1 and the mask.
-    std::cout << "ASR " << std::hex << op1 << " = " << (op2 | mask) << "\n";
+    //The ASR is calculated by taking the OR of the 1 Bit LSR of registers[r1] and the mask.
+    std::cout << "ASR " << std::hex << registers[r1] << " = " << (registers[r2] | mask) << "\n";
+    return (registers[r2] | mask);
 }
 
 //Logical shift left on first operand
-void AssemblyReader::lsl(uint32_t op1, uint32_t op2){
-    std::cout << "LSL " << std::hex << op1 << " = " << (op1 << 1) << "\n";
+uint32_t AssemblyReader::lsl(std::string r1, std::string r2){
+    std::cout << "LSL " << std::hex << registers[r1] << " = " << (registers[r1] << 1) << "\n";
+    return (registers[r1] << 1);
 }
 
 //Bitwise Not on first operand
-void AssemblyReader::bitwiseNot(uint32_t op1, uint32_t op2){
-    std::cout << "NOT " << std::hex << op1 << " = " << ~op1 << "\n";
+uint32_t AssemblyReader::bitwiseNot(std::string r1, std::string r2){
+    std::cout << "NOT " << std::hex << registers[r1] << " = " << ~registers[r1] << "\n";
+    return ~registers[r1];
 }
 
 //Bitwise or on two operands
-void AssemblyReader::orr(uint32_t op1, uint32_t op2){
-    std::cout << std::hex << op1 << " | " << std::hex << op2 << " = " << (op1 | op2) << "\n";
+uint32_t AssemblyReader::orr(std::string r1, std::string r2){
+    std::cout << std::hex << registers[r1] << " | " << std::hex << registers[r2] << " = " << (registers[r1] | registers[r2]) << "\n";
+    return (registers[r1] | registers[r2]);
 }
 
 //Subtracts second operand from the first operand
-void AssemblyReader::sub(uint32_t op1, uint32_t op2){
-    std::cout << std::hex << op1 << " - " << std::hex << op2 << " = " << (op1 - op2) << "\n";
+uint32_t AssemblyReader::sub(std::string r1, std::string r2){
+    std::cout << std::hex << registers[r1] << " - " << std::hex << registers[r2] << " = " << (registers[r1] - registers[r2]) << "\n";
+    return (registers[r1] - registers[r2]);
 }
 
 //Bitwise xor on two operands
-void AssemblyReader::bitwiseXor(uint32_t op1, uint32_t op2){
-    std::cout << std::hex << op1 << " ^ " << std::hex << op2 << " = " << (op1 ^ op2) << "\n";
+uint32_t AssemblyReader::bitwiseXor(std::string r1, std::string r2){
+    std::cout << std::hex << registers[r1] << " ^ " << std::hex << registers[r2] << " = " << (registers[r1] ^ registers[r2]) << "\n";
+    return (registers[r1] ^ registers[r2]);
+}
+
+//Changes value of register
+void AssemblyReader::mov(std::string r0, uint32_t op){
+    registers[r0] = op; 
 }

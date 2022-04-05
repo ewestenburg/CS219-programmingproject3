@@ -7,21 +7,27 @@
 //This class contains a member of all the commands that can be run. And a function for each command. 
 class AssemblyReader {
 private:
+    //Commands
     std::map<std::string, int> commandMap;
+
+    //Registers
+    std::map<std::string, uint32_t> registers;
 
 public:
     AssemblyReader();
     void initializeMap();
-    void runCommand(std::string oper, uint32_t op1, uint32_t op2);
-    void add(uint32_t op1, uint32_t op2);
-    void bitwiseAnd(uint32_t op1, uint32_t op2);
-    void asr(uint32_t op1, uint32_t op2);
-    void lsr(uint32_t op1, uint32_t op2);
-    void lsl(uint32_t op1, uint32_t op2);
-    void bitwiseNot(uint32_t op1, uint32_t op2);
-    void orr(uint32_t op1, uint32_t op2);
-    void sub(uint32_t op1, uint32_t op2);
-    void bitwiseXor(uint32_t op1, uint32_t op2);
+    void initializeRegisters();
+    void runCommand(std::string oper, std::string r1, std::string r2, std::string r3);
+    uint32_t add(std::string r1, std::string r2);
+    uint32_t bitwiseAnd(std::string r1, std::string r2);
+    uint32_t asr(std::string r1, std::string r2);
+    uint32_t lsr(std::string r1, std::string r2);
+    uint32_t lsl(std::string r1, std::string r2);
+    uint32_t bitwiseNot(std::string r1, std::string r2);
+    uint32_t orr(std::string r1, std::string r2);
+    uint32_t sub(std::string r1, std::string r2);
+    uint32_t bitwiseXor(std::string r1, std::string r2);
+    void mov(std::string r0, uint32_t op);
 };
 //#include "assemblyReader.cpp"
 #endif
