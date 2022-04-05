@@ -1,4 +1,5 @@
 MOV         R1          0x7D
 MOV         R2          0x1
 ADD         R1          R1          R2
-LSR         R1          R1
+ASR         R1          R1
+ASR         R1          r1

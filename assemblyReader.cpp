@@ -106,17 +106,13 @@ uint32_t AssemblyReader::lsr(std::string r1, std::string r2){
 //Because the integers are unsigned the >> is automatically a LSR. 
 //Arithmetic shift right on first operand. 
 uint32_t AssemblyReader::asr(std::string r1, std::string r2){
-    //x equals the first bit set to 1. I.e x=3 if registers[r1]=0101
-    int x = (int)log2(registers[r1])+1;
-    //Produces a number that is 1 at the xth bit and 0 every else
-    uint32_t mask = pow(2, x-1);
+    uint32_t temp = (registers[r1] >> 1);
 
-    //registers[r2] is set to the 1 Bit LSR of registers[r1]
-    registers[r2] = (registers[r1] >> 1);
-
-    //The ASR is calculated by taking the OR of the 1 Bit LSR of registers[r1] and the mask.
-    std::cout << "ASR " << std::hex << registers[r1] << " = " << (registers[r2] | mask) << "\n";
-    return (registers[r2] | mask);
+    //If the 31st bit is 1 then add 2^31 to the result
+    if(registers[r1] >= 2147483648){
+        temp = temp + 2147483648;
+    }
+    return temp;
 }
 
 //Logical shift left on first operand
